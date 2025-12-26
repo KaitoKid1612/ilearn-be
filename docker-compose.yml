@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ilearn-postgres
+    restart: unless-stopped
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: ${DB_USER:-ilearn}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-ilearn123}
+      POSTGRES_DB: ${DB_NAME:-ilearn_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - ilearn-network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER:-ilearn}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ilearn-app
+    restart: unless-stopped
+    ports:
+      - '${PORT:-3000}:${PORT:-3000}'
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      DATABASE_URL: postgresql://${DB_USER:-ilearn}:${DB_PASSWORD:-ilearn123}@postgres:5432/${DB_NAME:-ilearn_db}
+      JWT_SECRET: ${JWT_SECRET}
+      PORT: ${PORT:-3000}
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - ilearn-network
+    command: npm run dev
+
+volumes:
+  postgres_data:
+
+networks:
+  ilearn-network:
+    driver: bridge

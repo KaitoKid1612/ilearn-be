@@ -1,0 +1,257 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+// User model
+model User {
+    id        String   @id @default(uuid())
+    email     String   @unique
+    password  String
+    name      String
+    role      Role     @default(USER)
+    avatar    String?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Relations
+    courses       Course[]
+    enrollments   Enrollment[]
+    progress      Progress[]
+    flashcardSets FlashcardSet[]
+    quizAttempts  QuizAttempt[]
+    gameScores    GameScore[]
+
+    @@map("users")
+}
+
+enum Role {
+    USER
+    ADMIN
+}
+
+// Course/Lesson model
+model Course {
+    id          String   @id @default(uuid())
+    title       String
+    description String?
+    content     String   @db.Text
+    thumbnail   String?
+    isPublic    Boolean  @default(false)
+    authorId    String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    // Relations
+    author      User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+    enrollments Enrollment[]
+    lessons     Lesson[]
+    quizzes     Quiz[]
+
+    @@map("courses")
+}
+
+// Lesson within a course
+model Lesson {
+    id        String   @id @default(uuid())
+    title     String
+    content   String   @db.Text
+    order     Int
+    courseId  String
+    duration  Int? // in minutes
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Relations
+    course   Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+    progress Progress[]
+
+    @@map("lessons")
+}
+
+// Enrollment - user enrolls in a course
+model Enrollment {
+    id           String    @id @default(uuid())
+    userId       String
+    courseId     String
+    enrolledAt   DateTime  @default(now())
+    completedAt  DateTime?
+    lastAccessAt DateTime  @default(now())
+
+    // Relations
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, courseId])
+    @@map("enrollments")
+}
+
+// Progress tracking
+model Progress {
+    id          String   @id @default(uuid())
+    userId      String
+    lessonId    String
+    isCompleted Boolean  @default(false)
+    timeSpent   Int      @default(0) // in seconds
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    // Relations
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, lessonId])
+    @@map("progress")
+}
+
+// Flashcard Set
+model FlashcardSet {
+    id          String   @id @default(uuid())
+    title       String
+    description String?
+    authorId    String
+    isPublic    Boolean  @default(false)
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    // Relations
+    author     User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+    flashcards Flashcard[]
+
+    @@map("flashcard_sets")
+}
+
+// Flashcard
+model Flashcard {
+    id        String   @id @default(uuid())
+    front     String   @db.Text
+    back      String   @db.Text
+    setId     String
+    order     Int
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Relations
+    set FlashcardSet @relation(fields: [setId], references: [id], onDelete: Cascade)
+
+    @@map("flashcards")
+}
+
+// Quiz
+model Quiz {
+    id           String   @id @default(uuid())
+    title        String
+    description  String?
+    courseId     String?
+    timeLimit    Int? // in minutes
+    passingScore Int      @default(70) // percentage
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+
+    // Relations
+    course    Course?       @relation(fields: [courseId], references: [id], onDelete: SetNull)
+    questions Question[]
+    attempts  QuizAttempt[]
+
+    @@map("quizzes")
+}
+
+// Quiz Question
+model Question {
+    id        String       @id @default(uuid())
+    quizId    String
+    content   String       @db.Text
+    type      QuestionType
+    options   Json? // Array of options for multiple choice
+    answer    String       @db.Text // Correct answer(s)
+    points    Int          @default(1)
+    order     Int
+    createdAt DateTime     @default(now())
+    updatedAt DateTime     @updatedAt
+
+    // Relations
+    quiz    Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+    answers Answer[]
+
+    @@map("questions")
+}
+
+enum QuestionType {
+    MULTIPLE_CHOICE
+    TRUE_FALSE
+    SHORT_ANSWER
+    ESSAY
+}
+
+// Quiz Attempt
+model QuizAttempt {
+    id          String    @id @default(uuid())
+    userId      String
+    quizId      String
+    score       Float
+    totalPoints Int
+    isPassed    Boolean
+    startedAt   DateTime  @default(now())
+    completedAt DateTime?
+
+    // Relations
+    user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    quiz    Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+    answers Answer[]
+
+    @@map("quiz_attempts")
+}
+
+// Answer submitted by user
+model Answer {
+    id         String   @id @default(uuid())
+    attemptId  String
+    questionId String
+    answer     String   @db.Text
+    isCorrect  Boolean
+    points     Int
+    createdAt  DateTime @default(now())
+
+    // Relations
+    attempt  QuizAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+    question Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+    @@map("answers")
+}
+
+// Game Score (for simple learning games)
+model GameScore {
+    id        String   @id @default(uuid())
+    userId    String
+    gameType  String
+    score     Int
+    level     Int      @default(1)
+    metadata  Json? // Additional game-specific data
+    createdAt DateTime @default(now())
+
+    // Relations
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@map("game_scores")
+}
+
+// AI Generated Content Log (to track AI usage and costs)
+model AIContentLog {
+    id          String   @id @default(uuid())
+    contentType String // lesson, quiz, flashcard, etc.
+    prompt      String   @db.Text
+    response    String   @db.Text
+    tokensUsed  Int
+    model       String
+    cost        Float? // estimated cost
+    generatedAt DateTime @default(now())
+
+    @@map("ai_content_logs")
+}
