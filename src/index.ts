@@ -60,13 +60,18 @@ app.use(errorHandler);
 
 // Start server
 const PORT = APP_CONFIG.PORT;
+const HOST = '0.0.0.0'; // Listen on all network interfaces
 
-const server = app.listen(PORT, () => {
-  logger.info(`🚀 Server is running on port ${PORT}`);
+const server = app.listen(PORT, HOST, () => {
+  logger.info(`🚀 Server is running on ${HOST}:${PORT}`);
   logger.info(`📝 Environment: ${APP_CONFIG.NODE_ENV}`);
   logger.info(
-    `🔗 API URL: http://localhost:${PORT}${APP_CONFIG.API_PREFIX}/${APP_CONFIG.API_VERSION}`
+    `🔗 Local: http://localhost:${PORT}${APP_CONFIG.API_PREFIX}/${APP_CONFIG.API_VERSION}`
   );
+  logger.info(
+    `🌐 Network: http://172.23.69.247:${PORT}${APP_CONFIG.API_PREFIX}/${APP_CONFIG.API_VERSION}`
+  );
+  logger.info(`💡 For Flutter on Windows, use: http://172.23.69.247:${PORT}`);
 });
 
 // Graceful shutdown

@@ -1,6 +1,6 @@
 // Application configuration constants
 export const APP_CONFIG = {
-  PORT: process.env.PORT || 3000,
+  PORT: parseInt(process.env.PORT || '3000', 10),
   NODE_ENV: process.env.NODE_ENV || 'development',
   API_VERSION: 'v1',
   API_PREFIX: '/api',

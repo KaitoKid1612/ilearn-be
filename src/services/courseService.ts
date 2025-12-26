@@ -40,7 +40,8 @@ export class CourseService extends BaseService<Course> {
       where.OR = [
         { title: { contains: search, mode: 'insensitive' } },
         { description: { contains: search, mode: 'insensitive' } },
-      ];  }
+      ];
+    }
 
     if (enrolled && userId) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access

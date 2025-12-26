@@ -1,4 +1,4 @@
-import { body, param, query } from 'express-validator';
+import { body, param, query, ValidationChain } from 'express-validator';
 
 /**
  * Common validation rules
@@ -79,8 +79,6 @@ export const validateArray = (field: string, minLength: number = 0) => {
 };
 
 // Optional field
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const optionalField = (validator: any) => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+export const optionalField = (validator: ValidationChain): ValidationChain => {
   return validator.optional({ nullable: true, checkFalsy: false });
 };

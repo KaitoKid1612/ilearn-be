@@ -1,0 +1,615 @@
+{
+  "info": {
+    "name": "iLearn API",
+    "description": "API Collection for iLearn - Personalized Learning Platform",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "ilearn-api"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://172.23.69.247:3000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"Password123!\",\n  \"confirmPassword\": \"Password123!\",\n  \"name\": \"New User\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Register a new user account"
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set(\"accessToken\", jsonData.data.accessToken);",
+                  "    pm.collectionVariables.set(\"refreshToken\", jsonData.data.refreshToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"leviet1612@gmail.com\",\n  \"password\": \"Viet1234\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Login with email and password. Auto-saves tokens to collection variables."
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            },
+            "description": "Get currently authenticated user profile"
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set(\"accessToken\", jsonData.data.accessToken);",
+                  "    pm.collectionVariables.set(\"refreshToken\", jsonData.data.refreshToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh"]
+            },
+            "description": "Refresh access token using refresh token"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            },
+            "description": "Logout current user"
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"leviet1612@gmail.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/forgot-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "forgot-password"]
+            },
+            "description": "Send password reset email"
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"reset-token-from-email\",\n  \"password\": \"NewPassword123!\",\n  \"confirmPassword\": \"NewPassword123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/reset-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "reset-password"]
+            },
+            "description": "Reset password with token from email"
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"Viet1234\",\n  \"newPassword\": \"NewPassword123!\",\n  \"confirmPassword\": \"NewPassword123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/change-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "change-password"]
+            },
+            "description": "Change password for authenticated user"
+          }
+        }
+      ],
+      "description": "Authentication and user management endpoints"
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Update User Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Name\",\n  \"avatar\": \"https://example.com/avatar.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/:userId",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", ":userId"],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Update user profile (own profile or admin)"
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/:userId",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", ":userId"],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Delete user account (own account or admin)"
+          }
+        }
+      ],
+      "description": "User profile management endpoints"
+    },
+    {
+      "name": "Courses",
+      "item": [
+        {
+          "name": "Get All Courses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/courses?search=&isPublic=true&authorId=&page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["courses"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Search by title or description"
+                },
+                {
+                  "key": "isPublic",
+                  "value": "true",
+                  "description": "Filter by public/private"
+                },
+                {
+                  "key": "authorId",
+                  "value": "",
+                  "description": "Filter by author ID"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Items per page"
+                }
+              ]
+            },
+            "description": "Get list of courses with optional filters and pagination"
+          }
+        },
+        {
+          "name": "Get Course by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/courses/:courseId",
+              "host": ["{{baseUrl}}"],
+              "path": ["courses", ":courseId"],
+              "variable": [
+                {
+                  "key": "courseId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Get detailed information about a specific course"
+          }
+        },
+        {
+          "name": "Create Course",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"New Course Title\",\n  \"description\": \"Course description here\",\n  \"content\": \"# Course Content\\n\\nDetailed course content in markdown format.\",\n  \"thumbnail\": \"https://example.com/thumbnail.jpg\",\n  \"isPublic\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/courses",
+              "host": ["{{baseUrl}}"],
+              "path": ["courses"]
+            },
+            "description": "Create a new course (requires authentication)"
+          }
+        },
+        {
+          "name": "Update Course",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Course Title\",\n  \"description\": \"Updated description\",\n  \"content\": \"Updated content\",\n  \"thumbnail\": \"https://example.com/new-thumbnail.jpg\",\n  \"isPublic\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/courses/:courseId",
+              "host": ["{{baseUrl}}"],
+              "path": ["courses", ":courseId"],
+              "variable": [
+                {
+                  "key": "courseId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Update course (author or admin only)"
+          }
+        },
+        {
+          "name": "Delete Course",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/courses/:courseId",
+              "host": ["{{baseUrl}}"],
+              "path": ["courses", ":courseId"],
+              "variable": [
+                {
+                  "key": "courseId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Delete course (author or admin only)"
+          }
+        },
+        {
+          "name": "Enroll in Course",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/courses/:courseId/enroll",
+              "host": ["{{baseUrl}}"],
+              "path": ["courses", ":courseId", "enroll"],
+              "variable": [
+                {
+                  "key": "courseId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Enroll current user in a course"
+          }
+        },
+        {
+          "name": "Get Course Progress",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/courses/:courseId/progress",
+              "host": ["{{baseUrl}}"],
+              "path": ["courses", ":courseId", "progress"],
+              "variable": [
+                {
+                  "key": "courseId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Get current user's progress in a course"
+          }
+        }
+      ],
+      "description": "Course management and enrollment endpoints"
+    },
+    {
+      "name": "Lessons",
+      "item": [
+        {
+          "name": "Get Lessons by Course",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/courses/:courseId/lessons",
+              "host": ["{{baseUrl}}"],
+              "path": ["courses", ":courseId", "lessons"],
+              "variable": [
+                {
+                  "key": "courseId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Get all lessons for a specific course"
+          }
+        },
+        {
+          "name": "Get Lesson by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/lessons/:lessonId",
+              "host": ["{{baseUrl}}"],
+              "path": ["lessons", ":lessonId"],
+              "variable": [
+                {
+                  "key": "lessonId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Get detailed information about a specific lesson"
+          }
+        },
+        {
+          "name": "Create Lesson",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"New Lesson Title\",\n  \"content\": \"# Lesson Content\\n\\nDetailed lesson content in markdown.\",\n  \"order\": 1,\n  \"duration\": 1800\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/courses/:courseId/lessons",
+              "host": ["{{baseUrl}}"],
+              "path": ["courses", ":courseId", "lessons"],
+              "variable": [
+                {
+                  "key": "courseId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Create a new lesson in a course (course author or admin)"
+          }
+        },
+        {
+          "name": "Update Lesson",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Lesson Title\",\n  \"content\": \"Updated lesson content\",\n  \"order\": 2,\n  \"duration\": 2400\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/lessons/:lessonId",
+              "host": ["{{baseUrl}}"],
+              "path": ["lessons", ":lessonId"],
+              "variable": [
+                {
+                  "key": "lessonId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Update lesson (course author or admin)"
+          }
+        },
+        {
+          "name": "Delete Lesson",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/lessons/:lessonId",
+              "host": ["{{baseUrl}}"],
+              "path": ["lessons", ":lessonId"],
+              "variable": [
+                {
+                  "key": "lessonId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Delete lesson (course author or admin)"
+          }
+        },
+        {
+          "name": "Complete Lesson",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"timeSpent\": 1200\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/lessons/:lessonId/complete",
+              "host": ["{{baseUrl}}"],
+              "path": ["lessons", ":lessonId", "complete"],
+              "variable": [
+                {
+                  "key": "lessonId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Mark lesson as completed and track time spent (in seconds)"
+          }
+        }
+      ],
+      "description": "Lesson management and progress tracking endpoints"
+    }
+  ]
+}

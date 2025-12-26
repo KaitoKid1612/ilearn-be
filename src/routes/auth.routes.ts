@@ -19,8 +19,7 @@ const router = express.Router();
  */
 router.post(
   '/register',
-  registerValidator,
-  validate,
+  validate(registerValidator),
   asyncHandler(authController.register.bind(authController))
 );
 
@@ -31,8 +30,7 @@ router.post(
  */
 router.post(
   '/login',
-  loginValidator,
-  validate,
+  validate(loginValidator),
   asyncHandler(authController.login.bind(authController))
 );
 
@@ -43,8 +41,7 @@ router.post(
  */
 router.post(
   '/refresh',
-  refreshTokenValidator,
-  validate,
+  validate(refreshTokenValidator),
   asyncHandler(authController.refreshToken.bind(authController))
 );
 
@@ -70,8 +67,7 @@ router.post('/logout', authenticate, asyncHandler(authController.logout.bind(aut
 router.post(
   '/change-password',
   authenticate,
-  changePasswordValidator,
-  validate,
+  validate(changePasswordValidator),
   asyncHandler(authController.changePassword.bind(authController))
 );
 
@@ -82,8 +78,7 @@ router.post(
  */
 router.post(
   '/forgot-password',
-  forgotPasswordValidator,
-  validate,
+  validate(forgotPasswordValidator),
   asyncHandler(authController.forgotPassword.bind(authController))
 );
 
@@ -94,8 +89,7 @@ router.post(
  */
 router.post(
   '/reset-password',
-  resetPasswordValidator,
-  validate,
+  validate(resetPasswordValidator),
   asyncHandler(authController.resetPassword.bind(authController))
 );
 

@@ -21,8 +21,7 @@ router.get('/me', authenticate, asyncHandler(userController.getMyProfile.bind(us
 router.put(
   '/me',
   authenticate,
-  updateProfileValidator,
-  validate,
+  validate(updateProfileValidator),
   asyncHandler(userController.updateMyProfile.bind(userController))
 );
 
@@ -35,8 +34,7 @@ router.get(
   '/',
   authenticate,
   authorize('ADMIN'),
-  validatePagination(),
-  validate,
+  validate(validatePagination()),
   asyncHandler(userController.getAllUsers.bind(userController))
 );
 
@@ -48,8 +46,7 @@ router.get(
 router.get(
   '/:id',
   authenticate,
-  validateUUID('id'),
-  validate,
+  validate([validateUUID('id')]),
   asyncHandler(userController.getUserById.bind(userController))
 );
 
@@ -61,9 +58,7 @@ router.get(
 router.put(
   '/:id',
   authenticate,
-  validateUUID('id'),
-  updateProfileValidator,
-  validate,
+  validate([validateUUID('id'), ...updateProfileValidator]),
   asyncHandler(userController.updateUser.bind(userController))
 );
 
@@ -76,8 +71,7 @@ router.delete(
   '/:id',
   authenticate,
   authorize('ADMIN'),
-  validateUUID('id'),
-  validate,
+  validate([validateUUID('id')]),
   asyncHandler(userController.deleteUser.bind(userController))
 );
 
