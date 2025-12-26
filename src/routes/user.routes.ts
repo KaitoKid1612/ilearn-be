@@ -1,63 +1,88 @@
 import express from 'express';
-// import { userController } from '../controllers/userController';
-// import { asyncHandler, authenticate, authorize } from '../middlewares';
-// import { validateUUID, validatePagination } from '../validators/common';
-// import { validate } from '../middlewares';
+import { userController } from '../controllers/userController';
+import { asyncHandler, authenticate, authorize, validate } from '../middlewares';
+import { validateUUID, validatePagination } from '../validators/common';
+import { updateProfileValidator } from '../validators/user.validator';
 
 const router = express.Router();
+
+/**
+ * @route   GET /api/v1/users/me
+ * @desc    Get current user profile
+ * @access  Private
+ */
+router.get(
+  '/me',
+  authenticate,
+  asyncHandler(userController.getMyProfile.bind(userController))
+);
+
+/**
+ * @route   PUT /api/v1/users/me
+ * @desc    Update current user profile
+ * @access  Private
+ */
+router.put(
+  '/me',
+  authenticate,
+  updateProfileValidator,
+  validate,
+  asyncHandler(userController.updateMyProfile.bind(userController))
+);
 
 /**
  * @route   GET /api/v1/users
  * @desc    Get all users (Admin only)
  * @access  Private/Admin
  */
-// router.get(
-//   '/',
-//   authenticate,
-//   authorize('admin'),
-//   validatePagination(),
-//   validate,
-//   asyncHandler(userController.getAllUsers)
-// );
+router.get(
+  '/',
+  authenticate,
+  authorize('ADMIN'),
+  validatePagination(),
+  validate,
+  asyncHandler(userController.getAllUsers.bind(userController))
+);
 
 /**
  * @route   GET /api/v1/users/:id
  * @desc    Get user by ID
  * @access  Private
  */
-// router.get(
-//   '/:id',
-//   authenticate,
-//   validateUUID('id'),
-//   validate,
-//   asyncHandler(userController.getUserById)
-// );
+router.get(
+  '/:id',
+  authenticate,
+  validateUUID('id'),
+  validate,
+  asyncHandler(userController.getUserById.bind(userController))
+);
 
 /**
  * @route   PUT /api/v1/users/:id
  * @desc    Update user
- * @access  Private
+ * @access  Private (Own profile or Admin)
  */
-// router.put(
-//   '/:id',
-//   authenticate,
-//   validateUUID('id'),
-//   validate,
-//   asyncHandler(userController.updateUser)
-// );
+router.put(
+  '/:id',
+  authenticate,
+  validateUUID('id'),
+  updateProfileValidator,
+  validate,
+  asyncHandler(userController.updateUser.bind(userController))
+);
 
 /**
  * @route   DELETE /api/v1/users/:id
  * @desc    Delete user (Admin only)
  * @access  Private/Admin
  */
-// router.delete(
-//   '/:id',
-//   authenticate,
-//   authorize('admin'),
-//   validateUUID('id'),
-//   validate,
-//   asyncHandler(userController.deleteUser)
-// );
+router.delete(
+  '/:id',
+  authenticate,
+  authorize('ADMIN'),
+  validateUUID('id'),
+  validate,
+  asyncHandler(userController.deleteUser.bind(userController))
+);
 
 export default router;
