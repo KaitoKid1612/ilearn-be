@@ -8,7 +8,7 @@ export class BaseService<T> {
   protected model: any;
 
   constructor(modelName: string) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     this.model = (prisma as any)[modelName];
   }
 
@@ -45,7 +45,9 @@ export class BaseService<T> {
   async findById(id: string, include?: any): Promise<T | null> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
     return await this.model.findUnique({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       where: { id },
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       include,
     });
   }
@@ -57,7 +59,9 @@ export class BaseService<T> {
   async findOne(where: any, include?: any): Promise<T | null> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
     return await this.model.findFirst({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       where,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       include,
     });
   }
@@ -78,7 +82,9 @@ export class BaseService<T> {
   async update(id: string, data: any): Promise<T> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
     return await this.model.update({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       where: { id },
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       data,
     });
   }

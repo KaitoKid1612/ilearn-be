@@ -53,22 +53,14 @@ router.post(
  * @desc    Get current user
  * @access  Private
  */
-router.get(
-  '/me',
-  authenticate,
-  asyncHandler(authController.getMe.bind(authController))
-);
+router.get('/me', authenticate, asyncHandler(authController.getMe.bind(authController)));
 
 /**
  * @route   POST /api/v1/auth/logout
  * @desc    Logout user
  * @access  Private
  */
-router.post(
-  '/logout',
-  authenticate,
-  asyncHandler(authController.logout.bind(authController))
-);
+router.post('/logout', authenticate, asyncHandler(authController.logout.bind(authController)));
 
 /**
  * @route   POST /api/v1/auth/change-password

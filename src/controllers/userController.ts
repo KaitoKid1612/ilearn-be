@@ -22,8 +22,7 @@ class UserController {
       userService.getAllUsers({
         skip,
         take: limit,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        orderBy: orderBy as any,
+        orderBy,
       }),
       userService.count(),
     ]);
@@ -64,7 +63,7 @@ class UserController {
       throw new AppError('You can only update your own profile', 403);
     }
 
-    const { name, avatar } = req.body;
+    const { name, avatar } = req.body as { name?: string; avatar?: string };
 
     const user = await userService.updateProfile(id, { name, avatar });
 
@@ -116,7 +115,7 @@ class UserController {
       throw new AppError('Unauthorized', 401);
     }
 
-    const { name, avatar } = req.body;
+    const { name, avatar } = req.body as { name?: string; avatar?: string };
 
     const user = await userService.updateProfile(userId, { name, avatar });
 

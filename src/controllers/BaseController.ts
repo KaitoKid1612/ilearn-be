@@ -31,8 +31,7 @@ export class BaseController<T> {
       this.service.findAll({
         skip,
         take: limit,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        orderBy: orderBy as any,
+        orderBy,
       }),
       this.service.count(),
     ]);

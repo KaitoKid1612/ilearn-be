@@ -11,15 +11,11 @@ class AuthController {
    * POST /api/v1/auth/register
    */
   async register(req: Request, res: Response): Promise<void> {
-    const { email, password, name } = req.body;
+    const { email, password, name } = req.body as { email: string; password: string; name: string };
 
     const result = await authService.register({ email, password, name });
 
-    ResponseHandler.created(
-      res,
-      result,
-      'User registered successfully'
-    );
+    ResponseHandler.created(res, result, 'User registered successfully');
   }
 
   /**
@@ -27,15 +23,11 @@ class AuthController {
    * POST /api/v1/auth/login
    */
   async login(req: Request, res: Response): Promise<void> {
-    const { email, password } = req.body;
+    const { email, password } = req.body as { email: string; password: string };
 
     const result = await authService.login(email, password);
 
-    ResponseHandler.success(
-      res,
-      result,
-      'Login successful'
-    );
+    ResponseHandler.success(res, result, 'Login successful');
   }
 
   /**
@@ -64,7 +56,7 @@ class AuthController {
    * POST /api/v1/auth/refresh
    */
   async refreshToken(req: Request, res: Response): Promise<void> {
-    const { refreshToken } = req.body;
+    const { refreshToken } = req.body as { refreshToken: string };
 
     try {
       // Verify refresh token
@@ -84,11 +76,7 @@ class AuthController {
         role: user.role,
       });
 
-      ResponseHandler.success(
-        res,
-        { accessToken },
-        'Token refreshed successfully'
-      );
+      ResponseHandler.success(res, { accessToken }, 'Token refreshed successfully');
     } catch (error) {
       throw new AppError('Invalid refresh token', 401);
     }
@@ -98,6 +86,7 @@ class AuthController {
    * Logout user
    * POST /api/v1/auth/logout
    */
+  // eslint-disable-next-line @typescript-eslint/require-await
   async logout(_req: Request, res: Response): Promise<void> {
     // In JWT, logout is handled on client side by removing tokens
     // Server can implement token blacklist if needed
@@ -116,7 +105,10 @@ class AuthController {
       throw new AppError('Unauthorized', 401);
     }
 
-    const { currentPassword, newPassword } = req.body;
+    const { currentPassword, newPassword } = req.body as {
+      currentPassword: string;
+      newPassword: string;
+    };
 
     await authService.changePassword(userId, currentPassword, newPassword);
 
@@ -128,22 +120,18 @@ class AuthController {
    * POST /api/v1/auth/forgot-password
    */
   async forgotPassword(req: Request, res: Response): Promise<void> {
-    const { email } = req.body;
+    const { email } = req.body as { email: string };
 
     const user = await authService.getUserByEmail(email);
 
     // Don't reveal if email exists or not
-    ResponseHandler.success(
-      res,
-      null,
-      'If the email exists, a reset link will be sent'
-    );
+    ResponseHandler.success(res, null, 'If the email exists, a reset link will be sent');
 
     // TODO: Implement email sending logic
     // Generate reset token, save to DB, send email
     if (user) {
       // Send reset email
-      console.log(`Reset password email would be sent to: ${email}`);
+      void `Reset password email would be sent to: ${email}`;
     }
   }
 
@@ -151,14 +139,15 @@ class AuthController {
    * Reset password
    * POST /api/v1/auth/reset-password
    */
+  // eslint-disable-next-line @typescript-eslint/require-await
   async resetPassword(req: Request, res: Response): Promise<void> {
-    const { token, password } = req.body;
+    const { token, password } = req.body as { token: string; password: string };
 
     // TODO: Implement reset token verification
     // Verify token from DB, check expiration, update password
-    
+
     ResponseHandler.success(res, null, 'Password reset successfully');
-    console.log(`Reset password with token: ${token}, new password length: ${password.length}`);
+    void `Reset password with token: ${token}, new password length: ${password.length}`;
   }
 }
 

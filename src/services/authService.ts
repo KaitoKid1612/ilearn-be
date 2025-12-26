@@ -60,7 +60,10 @@ export class AuthService extends BaseService<User> {
   /**
    * Login user
    */
-  async login(email: string, password: string): Promise<{
+  async login(
+    email: string,
+    password: string
+  ): Promise<{
     user: Omit<User, 'password'>;
     accessToken: string;
     refreshToken: string;

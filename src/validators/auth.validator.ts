@@ -8,13 +8,13 @@ export const registerValidator = [
   validateEmail('email'),
   validatePassword('password'),
   validateString('name', 2, 100),
-  body('password')
-    .custom((value, { req }) => {
-      if (value !== req.body.confirmPassword) {
-        throw new Error('Passwords do not match');
-      }
-      return true;
-    }),
+  body('password').custom((value, { req }) => {
+    const body = req.body as { confirmPassword?: string };
+    if (value !== body.confirmPassword) {
+      throw new Error('Passwords do not match');
+    }
+    return true;
+  }),
 ];
 
 /**
@@ -27,31 +27,26 @@ export const loginValidator = [
     .isEmail()
     .withMessage('Invalid email format')
     .normalizeEmail(),
-  body('password')
-    .notEmpty()
-    .withMessage('Password is required'),
+  body('password').notEmpty().withMessage('Password is required'),
 ];
 
 /**
  * Forgot password validation
  */
-export const forgotPasswordValidator = [
-  validateEmail('email'),
-];
+export const forgotPasswordValidator = [validateEmail('email')];
 
 /**
  * Reset password validation
  */
 export const resetPasswordValidator = [
-  body('token')
-    .notEmpty()
-    .withMessage('Reset token is required'),
+  body('token').notEmpty().withMessage('Reset token is required'),
   validatePassword('password'),
   body('confirmPassword')
     .notEmpty()
     .withMessage('Confirm password is required')
     .custom((value, { req }) => {
-      if (value !== req.body.password) {
+      const body = req.body as { password?: string };
+      if (value !== body.password) {
         throw new Error('Passwords do not match');
       }
       return true;
@@ -62,15 +57,14 @@ export const resetPasswordValidator = [
  * Change password validation
  */
 export const changePasswordValidator = [
-  body('currentPassword')
-    .notEmpty()
-    .withMessage('Current password is required'),
+  body('currentPassword').notEmpty().withMessage('Current password is required'),
   validatePassword('newPassword'),
   body('confirmPassword')
     .notEmpty()
     .withMessage('Confirm password is required')
     .custom((value, { req }) => {
-      if (value !== req.body.newPassword) {
+      const body = req.body as { newPassword?: string };
+      if (value !== body.newPassword) {
         throw new Error('Passwords do not match');
       }
       return true;
@@ -81,7 +75,5 @@ export const changePasswordValidator = [
  * Refresh token validation
  */
 export const refreshTokenValidator = [
-  body('refreshToken')
-    .notEmpty()
-    .withMessage('Refresh token is required'),
+  body('refreshToken').notEmpty().withMessage('Refresh token is required'),
 ];

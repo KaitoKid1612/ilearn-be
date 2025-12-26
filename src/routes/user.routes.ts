@@ -11,11 +11,7 @@ const router = express.Router();
  * @desc    Get current user profile
  * @access  Private
  */
-router.get(
-  '/me',
-  authenticate,
-  asyncHandler(userController.getMyProfile.bind(userController))
-);
+router.get('/me', authenticate, asyncHandler(userController.getMyProfile.bind(userController)));
 
 /**
  * @route   PUT /api/v1/users/me

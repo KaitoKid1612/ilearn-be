@@ -11,11 +11,7 @@ export const validateUUID = (field: string = 'id') => {
 
 // Email validation
 export const validateEmail = (field: string = 'email') => {
-  return body(field)
-    .isEmail()
-    .withMessage('Invalid email format')
-    .normalizeEmail()
-    .trim();
+  return body(field).isEmail().withMessage('Invalid email format').normalizeEmail().trim();
 };
 
 // Password validation
@@ -28,11 +24,7 @@ export const validatePassword = (field: string = 'password') => {
 };
 
 // String validation
-export const validateString = (
-  field: string,
-  minLength: number = 1,
-  maxLength: number = 255
-) => {
+export const validateString = (field: string, minLength: number = 1, maxLength: number = 255) => {
   return body(field)
     .isString()
     .withMessage(`${field} must be a string`)
@@ -67,7 +59,10 @@ export const validatePagination = () => {
     query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
     query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be 1-100'),
     query('sortBy').optional().isString().trim(),
-    query('sortOrder').optional().isIn(['asc', 'desc']).withMessage('Sort order must be asc or desc'),
+    query('sortOrder')
+      .optional()
+      .isIn(['asc', 'desc'])
+      .withMessage('Sort order must be asc or desc'),
   ];
 };
 
@@ -84,6 +79,8 @@ export const validateArray = (field: string, minLength: number = 0) => {
 };
 
 // Optional field
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const optionalField = (validator: any) => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   return validator.optional({ nullable: true, checkFalsy: false });
 };
