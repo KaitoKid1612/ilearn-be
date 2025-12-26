@@ -9,8 +9,9 @@ export const registerValidator = [
   validatePassword('password'),
   validateString('name', 2, 100),
   body('password').custom((value, { req }) => {
-    const body = req.body as { confirmPassword?: string };
-    if (value !== body.confirmPassword) {
+    const body = req.body as { confirmPassword?: string; password_confirmation?: string };
+    const confirmPassword = body.confirmPassword || body.password_confirmation;
+    if (value !== confirmPassword) {
       throw new Error('Passwords do not match');
     }
     return true;
@@ -41,7 +42,7 @@ export const forgotPasswordValidator = [validateEmail('email')];
 export const resetPasswordValidator = [
   body('token').notEmpty().withMessage('Reset token is required'),
   validatePassword('password'),
-  body('confirmPassword')
+  body(['confirmPassword', 'password_confirmation'])
     .notEmpty()
     .withMessage('Confirm password is required')
     .custom((value, { req }) => {
@@ -59,7 +60,7 @@ export const resetPasswordValidator = [
 export const changePasswordValidator = [
   body('currentPassword').notEmpty().withMessage('Current password is required'),
   validatePassword('newPassword'),
-  body('confirmPassword')
+  body(['confirmPassword', 'password_confirmation'])
     .notEmpty()
     .withMessage('Confirm password is required')
     .custom((value, { req }) => {
