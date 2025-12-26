@@ -11,7 +11,7 @@ export const JWT_CONFIG = {
   SECRET: process.env.JWT_SECRET || 'your-secret-key-change-in-production',
   EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
   REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN || '30d',
-} as const;
+};
 
 // Database configuration
 export const DB_CONFIG = {
